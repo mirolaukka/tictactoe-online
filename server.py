@@ -2,8 +2,9 @@ import socket
 import threading
 import random
 
-HOST = '127.0.0.1'  # Replace with your server IP address if needed
+HOST = "127.0.0.1"  # Replace with your server IP address if needed
 PORT = 65432
+
 
 class TicTacToeServer:
     def __init__(self):
@@ -49,7 +50,8 @@ class TicTacToeServer:
                     if self.game.make_move(position):
                         game_over, winner = self.game.check_winner()
                         if game_over:
-                            self.send_to_all_clients(f'Game Over! Winner: {winner}')
+                            self.send_to_all_clients(self.game.get_board_str())
+                            self.send_to_all_clients(f"Game Over! Winner: {winner}")
                             self.game = None
                         else:
                             self.send_to_all_clients(self.game.get_board_str())
@@ -76,15 +78,21 @@ class TicTacToeServer:
             print(f"Connected by {addr}")
             threading.Thread(target=self.handle_client, args=(conn, addr)).start()
 
+
 class TicTacToeGame:
     def __init__(self):
         self.board = [" " for _ in range(9)]
         self.current_player = random.randint(0, 1)  # Randomly choose starting player
         self.WINNING_COMBINATIONS = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columns
-        [0, 4, 8], [2, 4, 6]             # Diagonals
-    ]
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],  # Rows
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],  # Columns
+            [0, 4, 8],
+            [2, 4, 6],  # Diagonals
+        ]
 
     def make_move(self, position):
         if self.board[position] == " ":
@@ -116,10 +124,11 @@ class TicTacToeGame:
         return self.board
 
     def get_board_str(self):
-        return ','.join(self.board)
+        return ",".join(self.board)
 
     def get_current_player(self):
         return self.current_player
+
 
 if __name__ == "__main__":
     server = TicTacToeServer()
